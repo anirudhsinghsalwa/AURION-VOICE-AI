@@ -164,23 +164,33 @@ function checkAndOpenWebsite(messageText) {
             // Append User Message to viewport
             appendMessage('user', messageText);
             
+            // Try to open in a new tab
+            const newWindow = window.open(targetUrl, '_blank');
+            
+            // Detect if browser popup blocker intervened
+            const isBlocked = !newWindow || newWindow.closed || typeof newWindow.closed === 'undefined';
+            
             updateStatus('AI Responding...', 'green');
             
-            // Append AI confirmation bubble
-            appendMessage('ai', `Sure! Opening **${siteName}** now...`);
-            
-            // Trigger TTS if enabled
-            if (ttsToggle && ttsToggle.checked) {
-                speakResponse(`Opening ${siteName}`);
+            if (isBlocked) {
+                // Render fallback manual link button in AI bubble
+                appendMessage('ai', `I tried to open **${siteName}** in a new tab, but your browser blocked the pop-up. <br><br> <a href="${targetUrl}" target="_blank" class="prompt-chip" style="display: inline-block; text-decoration: none; border-color: rgba(79, 70, 229, 0.4); color: #4f46e5; font-weight: 500; background: rgba(79, 70, 229, 0.05);">Open ${siteName} Manually</a>`);
+                if (ttsToggle && ttsToggle.checked) {
+                    speakResponse(`Browser blocked pop-up. Click the button to open ${siteName}.`);
+                }
+            } else {
+                appendMessage('ai', `Sure! Opening **${siteName}** in a new tab.`);
+                if (ttsToggle && ttsToggle.checked) {
+                    speakResponse(`Opening ${siteName}`);
+                }
             }
             
-            // Directly redirect the active tab to the target URL
-            setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 1000);
-            
+            if (!ttsToggle || !ttsToggle.checked) {
+                updateStatus('Ready', 'green');
+            }
             return true;
         }
+
 
 
     }
