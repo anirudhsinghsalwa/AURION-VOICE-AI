@@ -108,12 +108,11 @@
 
             <!-- Controls Panel -->
             <div class="control-panel">
-                <!-- Mic Button Wrapper -->
-                <div class="mic-section">
-                    <button id="mic-btn" class="mic-button" aria-label="Microphone">
+                <form id="chat-form" class="text-input-form">
+                    <!-- Integrated Mic Button -->
+                    <button type="button" id="mic-btn" class="mic-button" aria-label="Microphone">
                         <div class="mic-icon-wrapper">
-                            <!-- Mic icon svg -->
-                            <svg class="mic-svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg class="mic-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                                 <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                                 <line x1="12" y1="19" x2="12" y2="23"></line>
@@ -123,12 +122,9 @@
                         <div class="mic-pulse-ring ring-1"></div>
                         <div class="mic-pulse-ring ring-2"></div>
                     </button>
-                    <div class="voice-instruction">Click to speak</div>
-                </div>
 
-                <!-- Fallback Text Input -->
-                <form id="chat-form" class="text-input-form">
-                    <input type="text" id="text-input" placeholder="Type a message..." autocomplete="off">
+                    <input type="text" id="text-input" placeholder="Ask anything, or click the mic to speak..." autocomplete="off">
+                    
                     <button type="submit" id="send-btn" class="send-button" aria-label="Send message">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -136,7 +132,9 @@
                         </svg>
                     </button>
                 </form>
+                <div class="voice-instruction">Click the mic icon to start speaking</div>
             </div>
+
         </main>
     </div>
 

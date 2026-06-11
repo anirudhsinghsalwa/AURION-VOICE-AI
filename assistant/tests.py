@@ -53,9 +53,11 @@ class AssistantViewsTestCase(TestCase):
         """Verify user registration creates user and redirects to index."""
         response = self.client.post(reverse('assistant:register'), {
             'username': 'newuser',
+            'email': 'newuser@example.com',
             'password': 'password123',
             'password_confirm': 'password123'
         })
+
         self.assertRedirects(response, reverse('assistant:index'))
         self.assertTrue(User.objects.filter(username='newuser').exists())
 

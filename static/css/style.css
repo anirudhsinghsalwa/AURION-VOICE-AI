@@ -69,12 +69,12 @@ body {
 /* App Container Layout */
 .app-container {
     width: 100%;
-    max-width: 1000px;
-    height: 90vh;
+    max-width: 1250px;
+    height: 94vh;
     display: flex;
     flex-direction: column;
     z-index: 10;
-    padding: 20px;
+    padding: 10px 20px;
 }
 
 /* Header styling */
@@ -455,12 +455,12 @@ input:checked + .slider:before {
 
 /* Control Panel */
 .control-panel {
-    padding: 24px;
+    padding: 16px 24px 20px 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    background: rgba(0, 0, 0, 0.1);
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.15);
 }
 
 /* Microphone Section */
@@ -472,30 +472,35 @@ input:checked + .slider:before {
 }
 
 .mic-button {
-    width: 76px;
-    height: 76px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: none;
-    background: radial-gradient(circle, rgba(18, 18, 26, 1) 0%, rgba(26, 26, 38, 1) 100%);
-    box-shadow: 0 0 0 1px var(--card-border), 0 8px 24px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.25s ease;
 }
 
 .mic-icon-wrapper {
     z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .mic-button:hover {
     transform: scale(1.05);
     color: var(--text-primary);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 12px 30px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .mic-button:active {
@@ -506,7 +511,8 @@ input:checked + .slider:before {
 .mic-button.listening {
     color: #ffffff;
     background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
-    box-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+    border-color: transparent;
 }
 
 .mic-button.listening .mic-svg {
@@ -546,14 +552,14 @@ input:checked + .slider:before {
 /* Fallback Text Form */
 .text-input-form {
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
     display: flex;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 6px 6px 6px 16px;
+    border-radius: 20px;
+    padding: 6px 8px 6px 8px;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 

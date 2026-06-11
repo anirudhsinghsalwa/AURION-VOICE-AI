@@ -108,10 +108,11 @@ def register_view(request):
     error = None
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
         password_confirm = request.POST.get('password_confirm', '')
         
-        if not username or not password:
+        if not username or not password or not email:
             error = "All fields are required."
         elif len(password) < 6:
             error = "Password must be at least 6 characters."
@@ -121,12 +122,13 @@ def register_view(request):
             error = "Username is already taken."
         else:
             try:
-                user = User.objects.create_user(username=username, password=password)
+                user = User.objects.create_user(username=username, email=email, password=password)
                 login(request, user)
                 request.session['chat_history'] = []
                 return redirect('assistant:index')
             except Exception as e:
                 error = f"Error creating account: {str(e)}"
+
                 
     return render(request, 'register.html', {'error': error})
 

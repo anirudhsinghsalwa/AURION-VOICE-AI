@@ -437,7 +437,39 @@ if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefin
     window.speechSynthesis.onvoiceschanged = () => {};
 }
 
-// Auto Scroll to Bottom on page load if history is pre-rendered
+// Auto Scroll to Bottom on page load and trigger welcoming voice greeting
 window.addEventListener('DOMContentLoaded', () => {
     chatViewport.scrollTop = chatViewport.scrollHeight;
+    
+    // Check if there are no messages in the history (only welcome container might be present)
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const hasHistory = chatViewport.querySelectorAll('.message-row').length > 0;
+    
+    if (welcomeScreen && !hasHistory) {
+        const greetingText = "Hi! I am Aurion, your smart voice assistant. How can I help you today?";
+        
+        // Wait a brief moment before triggering to ensure the page has loaded beautifully
+        setTimeout(() => {
+            // Remove the welcome screen to clear the area for the first bubble
+            welcomeScreen.remove();
+            
+            // Append the AI greeting bubble
+            appendMessage('ai', greetingText);
+            
+            // Speak response if enabled
+            if (ttsToggle && ttsToggle.checked) {
+                speakResponse(greetingText);
+                
+                // Fallback: browser blocks speech synthesis until a user click occurs on the page
+                const triggerSpeechOnInteract = () => {
+                    speakResponse(greetingText);
+                    document.removeEventListener('click', triggerSpeechOnInteract);
+                    document.removeEventListener('keydown', triggerSpeechOnInteract);
+                };
+                document.addEventListener('click', triggerSpeechOnInteract);
+                document.addEventListener('keydown', triggerSpeechOnInteract);
+            }
+        }, 1000);
+    }
 });
+
