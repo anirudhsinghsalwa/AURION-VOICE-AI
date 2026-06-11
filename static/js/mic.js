@@ -165,20 +165,32 @@ function checkAndOpenWebsite(messageText) {
             appendMessage('user', messageText);
             
             // Open in new tab
-            window.open(targetUrl, '_blank');
+            const newWindow = window.open(targetUrl, '_blank');
             
-            // Append AI confirmation bubble
+            // Check if blocked by browser popup settings
+            const isBlocked = !newWindow || newWindow.closed || typeof newWindow.closed === 'undefined';
+            
             updateStatus('AI Responding...', 'green');
-            appendMessage('ai', `Sure! Opening **${siteName}** in a new tab.`);
             
-            // Trigger TTS if enabled
-            if (ttsToggle && ttsToggle.checked) {
-                speakResponse(`Opening ${siteName}`);
+            if (isBlocked) {
+                // Display fallback clickable button in AI bubble
+                appendMessage('ai', `I tried to open **${siteName}**, but your browser blocked the popup. <br><br> <a href="${targetUrl}" target="_blank" class="prompt-chip" style="display: inline-block; text-decoration: none; border-color: rgba(0, 242, 254, 0.4); color: var(--accent-blue); font-weight: 500;">Open ${siteName} Manually</a>`);
+                if (ttsToggle && ttsToggle.checked) {
+                    speakResponse(`Browser blocked popup. Click the button to open ${siteName}.`);
+                }
             } else {
+                appendMessage('ai', `Sure! Opening **${siteName}** in a new tab.`);
+                if (ttsToggle && ttsToggle.checked) {
+                    speakResponse(`Opening ${siteName}`);
+                }
+            }
+            
+            if (!ttsToggle || !ttsToggle.checked) {
                 updateStatus('Ready', 'green');
             }
             return true;
         }
+
     }
     return false;
 }
