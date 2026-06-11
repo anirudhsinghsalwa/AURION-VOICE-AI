@@ -19,17 +19,22 @@
     --font-display: 'Poppins', sans-serif;
 }
 
-body {
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
     background-color: var(--bg-color);
+}
+
+body {
     color: var(--text-primary);
     font-family: var(--font-sans);
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow-x: hidden;
     position: relative;
 }
+
 
 /* Background Glow Orbs */
 .glow-orb {
