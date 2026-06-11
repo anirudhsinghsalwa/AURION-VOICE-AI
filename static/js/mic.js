@@ -8,18 +8,31 @@ const statusDot = document.getElementById('assistant-status').querySelector('.st
 const ttsToggle = document.getElementById('tts-toggle');
 const clearBtn = document.getElementById('clear-btn');
 const welcomeScreen = document.getElementById('welcome-screen');
+const micSpeedSelect = document.getElementById('mic-speed');
 
 // Voice / Speech State
 let recognition = null;
 let isListening = false;
 let speechUtterance = null;
+let silenceTimer = null;
+
+// Initialize mic speed settings from localStorage
+if (micSpeedSelect) {
+    const savedSpeed = localStorage.getItem('mic_speed');
+    if (savedSpeed) {
+        micSpeedSelect.value = savedSpeed;
+    }
+    micSpeedSelect.addEventListener('change', () => {
+        localStorage.setItem('mic_speed', micSpeedSelect.value);
+    });
+}
 
 // Initialize Speech Recognition
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.continuous = true; // Use continuous so we control silence thresholds manually
+    recognition.interimResults = true; // Enable real-time partial transcribing
     recognition.lang = 'en-US';
 
     recognition.onstart = () => {
@@ -27,6 +40,7 @@ if (SpeechRecognition) {
         micBtn.classList.add('listening');
         document.querySelector('.voice-instruction').textContent = 'Listening...';
         updateStatus('Listening...', 'yellow');
+        textInput.value = ''; // Clear previous text to display transcription in real-time
         
         // Stop any currently playing TTS when user starts speaking
         if (window.speechSynthesis) {
@@ -37,6 +51,7 @@ if (SpeechRecognition) {
     recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         resetMicUI();
+        if (silenceTimer) clearTimeout(silenceTimer);
         if (event.error === 'not-allowed') {
             updateStatus('Mic access denied', 'red');
             alert('Microphone access denied. Please enable microphone permissions in your browser settings.');
@@ -47,12 +62,51 @@ if (SpeechRecognition) {
 
     recognition.onend = () => {
         resetMicUI();
+        if (silenceTimer) clearTimeout(silenceTimer);
+        
+        // If there's text remaining in the input field, submit it immediately
+        const text = textInput.value.trim();
+        if (text) {
+            sendMessage(text);
+            textInput.value = '';
+        }
     };
 
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
+        // Clear silence timer on every new speech fragment recognized
+        if (silenceTimer) clearTimeout(silenceTimer);
+        
+        let interimTranscript = '';
+        let finalTranscript = '';
+        let isFinalSegment = false;
+        
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+                isFinalSegment = true;
+            } else {
+                interimTranscript += event.results[i][0].transcript;
+            }
+        }
+        
+        const transcript = finalTranscript || interimTranscript;
         if (transcript && transcript.trim() !== '') {
-            sendMessage(transcript);
+            // Update input box in real-time so user sees instant results
+            textInput.value = transcript;
+            
+            // Get speed setting from dropdown
+            const speedSetting = micSpeedSelect ? micSpeedSelect.value : '400';
+            
+            if (speedSetting !== 'manual') {
+                const baseTimeout = parseInt(speedSetting, 10);
+                // If the engine finalized this segment, we can send very quickly.
+                // Otherwise, if it's interim, wait a bit longer to let the user complete their thought.
+                const timeoutDuration = isFinalSegment ? baseTimeout : (baseTimeout + 600);
+                
+                silenceTimer = setTimeout(() => {
+                    recognition.stop();
+                }, timeoutDuration);
+            }
         }
     };
 } else {
@@ -486,4 +540,32 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 });
+
+// Theme Toggle Switcher Logic
+const themeToggle = document.getElementById('theme-toggle');
+const themeText = document.getElementById('theme-text');
+
+if (themeToggle) {
+    const updateThemeButtonText = () => {
+        if (document.body.classList.contains('dark-mode')) {
+            if (themeText) themeText.textContent = 'Light';
+        } else {
+            if (themeText) themeText.textContent = 'Dark';
+        }
+    };
+    
+    updateThemeButtonText();
+    
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+        updateThemeButtonText();
+    });
+}
+
 
