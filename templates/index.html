@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURION VOICE AI – Smart Real-Time Voice Assistant SaaS</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Background glow elements -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <div class="app-container">
+        <!-- Sidebar or Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="url(#logo-grad)"/>
+                        <path d="M12 6C9.79 6 8 7.79 8 10V14C8 16.21 9.79 18 12 18C14.21 18 16 16.21 16 14V10C16 7.79 14.21 6 12 6ZM14 14C14 15.1 13.1 16 12 16C10.9 16 10 15.1 10 14V10C10 8.9 10.9 8 12 8C13.1 8 14 8.9 14 10V14Z" fill="url(#logo-grad)"/>
+                        <defs>
+                            <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#00f2fe"/>
+                                <stop offset="1" stop-color="#4facfe"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1>AURION <span>VOICE AI</span></h1>
+            </div>
+            
+            <div class="header-actions">
+                <button id="clear-btn" class="icon-btn" title="Clear Conversation">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Clear</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-card">
+            <!-- Messages Viewport -->
+            <div class="chat-viewport" id="chat-viewport">
+                {% if chat_history %}
+                    {% for msg in chat_history %}
+                        <div class="message-row {% if msg.role == 'user' %}user{% else %}ai{% endif %}">
+                            <div class="avatar">
+                                {% if msg.role == 'user' %}U{% else %}A{% endif %}
+                            </div>
+                            <div class="message-bubble">
+                                <div class="message-content">{{ msg.content }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Welcome screen -->
+                    <div class="welcome-container" id="welcome-screen">
+                        <div class="welcome-badge">Real-time Assistant</div>
+                        <h2>How can I help you today?</h2>
+                        <p>Click the microphone button to start speaking, or type your message in the box below.</p>
+                        
+                        <div class="suggested-prompts">
+                            <button class="prompt-chip" onclick="useSuggestedPrompt('Explain quantum computing in simple terms')">"Explain quantum computing"</button>
+                            <button class="prompt-chip" onclick="useSuggestedPrompt('Write a python script to sort a list')">"Write a sorting script"</button>
+                            <button class="prompt-chip" onclick="useSuggestedPrompt('Draft an email request for a project update')">"Draft an email"</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Speech Settings Toggle -->
+            <div class="settings-bar">
+                <div class="setting-item">
+                    <label class="switch">
+                        <input type="checkbox" id="tts-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="setting-label">Voice Response (TTS)</span>
+                </div>
+                <div class="status-indicator" id="assistant-status">
+                    <span class="status-dot green"></span>
+                    <span class="status-text" id="status-text">Ready</span>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="control-panel">
+                <!-- Mic Button Wrapper -->
+                <div class="mic-section">
+                    <button id="mic-btn" class="mic-button" aria-label="Microphone">
+                        <div class="mic-icon-wrapper">
+                            <!-- Mic icon svg -->
+                            <svg class="mic-svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </div>
+                        <div class="mic-pulse-ring ring-1"></div>
+                        <div class="mic-pulse-ring ring-2"></div>
+                    </button>
+                    <div class="voice-instruction">Click to speak</div>
+                </div>
+
+                <!-- Fallback Text Input -->
+                <form id="chat-form" class="text-input-form">
+                    <input type="text" id="text-input" placeholder="Type a message..." autocomplete="off">
+                    <button type="submit" id="send-btn" class="send-button" aria-label="Send message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden element for CSRF Token extraction -->
+    {% csrf_token %}
+
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/mic.js' %}"></script>
+</body>
+</html>

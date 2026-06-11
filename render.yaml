@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: aurion-voice-ai
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn aurion_voice_ai.wsgi:application"
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+        placeholder: "Enter your Gemini API key"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"

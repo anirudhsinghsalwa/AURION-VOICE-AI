@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+
+# Database
+db.sqlite3
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Static files directory created by collectstatic
+staticfiles/
+
+# Editor / IDE configuration directories
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
