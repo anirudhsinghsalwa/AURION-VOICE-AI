@@ -131,6 +131,58 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Helper to check for "open <site>" commands and trigger browser tab opening
+function checkAndOpenWebsite(messageText) {
+    const text = messageText.toLowerCase().trim();
+    
+    if (text.startsWith('open ')) {
+        const site = text.substring(5).trim();
+        let targetUrl = null;
+        let siteName = "";
+
+        if (site.includes('insta')) {
+            targetUrl = 'https://www.instagram.com';
+            siteName = 'Instagram';
+        } else if (site.includes('youtube') || site === 'yt') {
+            targetUrl = 'https://www.youtube.com';
+            siteName = 'YouTube';
+        } else if (site.includes('google')) {
+            targetUrl = 'https://www.google.com';
+            siteName = 'Google';
+        } else if (site.includes('github') || site === 'git') {
+            targetUrl = 'https://github.com';
+            siteName = 'GitHub';
+        } else if (site.includes('facebook') || site === 'fb') {
+            targetUrl = 'https://www.facebook.com';
+            siteName = 'Facebook';
+        } else if (site === 'x' || site.includes('twitter')) {
+            targetUrl = 'https://x.com';
+            siteName = 'X (Twitter)';
+        }
+
+        if (targetUrl) {
+            // Append User Message to viewport
+            appendMessage('user', messageText);
+            
+            // Open in new tab
+            window.open(targetUrl, '_blank');
+            
+            // Append AI confirmation bubble
+            updateStatus('AI Responding...', 'green');
+            appendMessage('ai', `Sure! Opening **${siteName}** in a new tab.`);
+            
+            // Trigger TTS if enabled
+            if (ttsToggle && ttsToggle.checked) {
+                speakResponse(`Opening ${siteName}`);
+            } else {
+                updateStatus('Ready', 'green');
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
 // Send user message to Django backend
 async function sendMessage(messageText) {
     // Hide welcome screen if present
@@ -138,8 +190,14 @@ async function sendMessage(messageText) {
         welcomeScreen.remove();
     }
 
+    // Intercept "open" commands and handle locally
+    if (checkAndOpenWebsite(messageText)) {
+        return;
+    }
+
     // Append User Message to viewport
     appendMessage('user', messageText);
+
     updateStatus('Processing...', 'yellow');
 
     // Create placeholder for AI reply

@@ -30,10 +30,12 @@ def get_gemini_response(message: str, history: list = None) -> str:
             "Always be direct and avoid unnecessary conversational filler."
         )
 
+        model_name = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
         model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
+            model_name=model_name,
             system_instruction=system_instruction
         )
+
 
         # Reconstruct the conversation history into the format Gemini expects
         contents = []
